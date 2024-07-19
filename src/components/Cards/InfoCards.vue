@@ -1,6 +1,6 @@
 <template>
   <div class="info-cards">
-    <div v-if="loading" class="loading">Loading...</div>
+    <CircularLoader v-if="loading" />
     <div v-if="error" class="error">{{ error }}</div>
     <div v-if="!loading && !error" class="cards-container">
       <div v-for="card in cards" :key="card.id" class="card" @click="openModal(card)">
@@ -21,12 +21,14 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import ModalComponent from '../../shared/ui/ModalComponent.vue';
+import CircularLoader from '../../shared/ui/CircularLoader.vue';
 
 const cards = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const selectedCard = ref(null);
 const isModalOpen = ref(false);
+const cardItems = 24
 
 const fetchData = async () => {
   loading.value = true;
@@ -35,7 +37,7 @@ const fetchData = async () => {
     const response = await axios.get('https://api.unsplash.com/photos', {
       params: {
         client_id: '15rsVEBMvb9cWBOrHEi9k4HaXq9lflKmfff1n46__cA',
-        per_page: 24,
+        per_page: cardItems,
       },
     });
     cards.value = response.data;
