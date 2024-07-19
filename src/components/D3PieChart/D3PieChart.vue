@@ -1,12 +1,28 @@
 <template>
-  <div>
-    <input type="number" v-model.number="newData" @keyup.enter="updateData" placeholder="Enter data value" />
-    <div ref="chart"></div>
+  <div class="container">
+    <div class="input-group">
+      <input
+        type="number"
+        v-model.number="newData"
+        @keyup.enter="updateData"
+        placeholder="Enter data value"
+        class="styled-input"
+      />
+      <button
+        :disabled="!newData"
+        @click="updateData"
+        class="styled-button"
+      >
+        Update
+      </button>
+    </div>
+    <div ref="chart" class="chart"></div>
   </div>
 </template>
 
 <script>
 import * as d3 from 'd3';
+// import { interpolateRainbow } from 'd3-scale-chromatic';
 
 export default {
   name: 'D3PieChart',
@@ -16,6 +32,8 @@ export default {
       dataset: [],
       radius: null,
       innerRadius: 50,
+      colors: d3.schemeSet3.concat(d3.schemeSet3), // получаем всего 14 уникальных цветов
+      // colorScale: d3.scaleSequential(interpolateRainbow).domain([0, 50]), // масштабирование цветов(палитра)
     };
   },
   mounted() {
@@ -48,7 +66,8 @@ export default {
 
       arcs.append('path')
         .attr('d', this.arc)
-        .attr('fill', (d, i) => d3.schemeCategory10[i % 10])
+        .attr('fill', (d, i) => this.colors[i % this.colors.length])
+        // .attr('fill', (d, i) => this.colorScale(i)) 
         .on('mouseover', this.mouseover)
         .on('mouseout', this.mouseout);
 
@@ -86,15 +105,57 @@ export default {
 </script>
 
 <style scoped>
-input {
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.styled-input {
   padding: 10px;
   font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+  outline: none;
+  transition: border-color 0.3s;
 }
-.arc path {
-  transition: fill 0.3s, transform 0.2s;
+
+.styled-input:focus {
+  border-color: #007bff;
 }
-.arc:hover path {
-  fill: orange;
+
+.styled-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.styled-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.styled-button:not(:disabled):hover {
+  background-color: #0056b3;
+}
+
+.chart {
+  width: 100%;
+  max-width: 500px;
 }
 </style>
+
