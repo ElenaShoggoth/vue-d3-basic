@@ -4,10 +4,10 @@
     <div v-if="error" class="error">{{ error }}</div>
     <div v-if="!loading && !error" class="cards-container">
       <div v-for="card in cards" :key="card.id" class="card" @click="openModal(card)">
-        <img :src="card.urls.small" :alt="card.alt_description" class="card-image" />
+        <img v-if="card.image" :src="card.image" :alt="card.name" class="card-image" />
         <div class="card-content">
-          <h3>{{ card.alt_description }}</h3>
-          <p>Photo by {{ card.user.name }}</p>
+          <h3>{{card.name}}</h3>
+          <p>{{card.price}}</p>
         </div>
       </div>
     </div>
@@ -19,36 +19,28 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import ModalComponent from '../../shared/ui/ModalComponent.vue';
 import CircularLoader from '../../shared/ui/CircularLoader.vue';
+import api from '../../api/axios.js';
 
 const cards = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const selectedCard = ref(null);
 const isModalOpen = ref(false);
-const cardItems = 24
 
 const fetchData = async () => {
-  loading.value = true;
-  error.value = null;
   try {
-    const response = await axios.get('https://api.unsplash.com/photos', {
-      params: {
-        client_id: '15rsVEBMvb9cWBOrHEi9k4HaXq9lflKmfff1n46__cA',
-        per_page: cardItems,
-      },
-    });
-    cards.value = response.data;
+    const response = await api.get('/main');
+    cards.value = response.data.items;
+    console.log(cards.value, 'items.value-------')
   } catch (err) {
-    error.value = 'Error fetching data.';
-  } finally {
-    loading.value = false;
+    error.value = err.message || 'Ошибка при загрузке данных';
   }
 };
 
 const openModal = (card) => {
+  console.log(card, 'card-------card====')
   selectedCard.value = card;
   isModalOpen.value = true;
 };

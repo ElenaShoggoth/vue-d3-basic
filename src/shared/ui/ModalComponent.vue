@@ -1,10 +1,10 @@
 <template>
   <div class="modal-overlay" @click.self="closeModal" v-if="props.isOpen">
     <div class="modal">
-      <img v-if="props.card && props.card.urls" :src="props.card.urls.regular" :alt="props.card.alt_description" class="modal-image" />
+      <img v-if="props.card && props.card.image" :src="props.card.image" :alt="props.card.name" class="modal-image" />
       <div class="modal-content">
-        <h2 v-if="props.card">{{ props.card.alt_description }}</h2>
-        <p v-if="props.card">Photo by {{ props.card.user.name }}</p>
+        <h2 v-if="props.card">{{ props.card.name }}</h2>
+        <p v-if="props.card">{{ props.card.price }}</p>
         <button @click="$emit('close')">Close</button>
       </div>
     </div>
